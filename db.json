@@ -1,8 +1,1 @@
-{
-  "messages": [
-    {
-      "role": "user",
-      "content": "Hello, I am Shakir"
-    }
-  ]
-}
+{ "messages": [{ "role": "user", "parts": [{ "text": "Hello, I am jason" }] }] }

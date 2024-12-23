@@ -1,11 +1,15 @@
 require("dotenv").config();
-
+let path = require("path");
+let fs = require("fs");
 const {
   GoogleGenerativeAI,
   HarmCategory,
   HarmBlockThreshold,
 } = require("@google/generative-ai");
+const writeToLocalDb = require("./writeToLocalDb");
 
+let dbPath = path.join(__dirname, "../db.json");
+let { messages } = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
 const apiKey = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
@@ -24,15 +28,13 @@ const generationConfig = {
 async function run() {
   const chatSession = model.startChat({
     generationConfig,
-    history: [
-      {
-        role: "user",
-        parts: [{ text: "Hello, I am Shakir" }],
-      },
-    ],
+    history: [...messages],
   });
+  let message = "do you know my name";
+  writeToLocalDb({ agent: "user", text: message });
+  const result = await chatSession.sendMessage(message);
+  writeToLocalDb({ agent: "model", text: result.response.text() });
 
-  const result = await chatSession.sendMessage("INSERT_INPUT_HERE");
   console.log(result.response.text());
 }
 
